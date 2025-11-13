@@ -1,0 +1,355 @@
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  width: 100%;
+  padding: 16px 24px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 10;
+  position: relative;
+  flex-shrink: 0;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.toolbar {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.btn.secondary {
+  background: #f1f5f9;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn.secondary:hover {
+  background: #e2e8f0;
+}
+
+.container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0; /* Important for flex children to respect overflow */
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 24px;
+  gap: 20px;
+}
+
+.upload-section {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  flex-shrink: 0; /* Prevent this section from shrinking */
+}
+
+.search-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.search-input-wrapper input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.threshold-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+input[type="range"] {
+  width: 120px;
+}
+
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 16px;
+}
+
+.dropzone:hover, .dropzone.dragover {
+  border-color: var(--accent);
+  background: rgba(59, 130, 246, 0.03);
+}
+
+.dropzone strong {
+  color: var(--accent);
+}
+
+.status {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+.pdf-viewer {
+  flex: 1;
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: auto;
+  padding: 20px;
+  min-height: 0; /* Important for flex children to respect overflow */
+}
+
+#pdf-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  min-height: min-content; /* Ensure container can grow with content */
+}
+
+.page-wrapper {
+  position: relative;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-lg);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.page-wrapper canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.textLayer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  color: transparent;
+  user-select: text;
+  pointer-events: none;
+}
+
+.textLayer > span, .textLayer > div {
+  color: transparent;
+  position: absolute;
+  transform-origin: 0 0;
+  white-space: pre;
+  pointer-events: auto;
+  cursor: text;
+}
+
+.highlight {
+  position: absolute;
+  background: rgba(255, 235, 59, 0.5);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.sidebar {
+  width: 360px;
+  background: var(--card);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0; /* Prevent sidebar from shrinking */
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sidebar-header strong {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+#results {
+  flex: 1;
+  overflow: auto;
+  padding: 0 20px 20px;
+  min-height: 0; /* Important for flex children to respect overflow */
+}
+
+ul.matches {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul.matches li {
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+ul.matches li:last-child {
+  border-bottom: none;
+}
+
+.match-btn {
+  all: unset;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  display: block;
+  width: 100%;
+  padding: 8px 0;
+  transition: color 0.2s;
+}
+
+.match-btn:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+footer {
+  padding: 16px 24px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-align: center;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    height: 40vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-input-wrapper {
+    min-width: auto;
+  }
+  
+  .threshold-controls {
+    align-self: flex-start;
+  }
+  
+  .main-content {
+    padding: 16px;
+  }
+  
+  .pdf-viewer {
+    padding: 16px;
+  }
+}

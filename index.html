@@ -3,42 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Fuzzy PDF Upload Search</title>
-
-  <style>
-    :root{
-      --bg:#f4f6f8; --card:#fff; --accent:#0060df; --muted:#666;
-    }
-    html,body{height:100%; margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
-    body{display:flex; flex-direction:column; align-items:center; background:var(--bg); color:#111;}
-    header{width:100%; max-width:1100px; padding:18px 20px; box-sizing:border-box; display:flex; align-items:center; gap:18px;}
-    header h1{margin:0; font-size:1.1rem;}
-    .toolbar{margin-left:auto; display:flex; gap:8px; align-items:center;}
-    .btn{background:var(--accent); color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;}
-    .btn.secondary{background:#eee; color:#111;}
-    .container{width:100%; max-width:1100px; padding:10px 20px; box-sizing:border-box; display:grid; grid-template-columns: 1fr 320px; gap:18px; align-items:start;}
-    .panel{background:var(--card); border-radius:10px; padding:12px; box-shadow:0 6px 18px rgba(12,20,30,0.06);}
-    #pdf-container{min-height:200px; display:flex; flex-direction:column; align-items:center; gap:12px; overflow:auto; padding:18px;}
-    .dropzone{border:2px dashed #cfd8e3; border-radius:8px; padding:20px; text-align:center; color:var(--muted); cursor:pointer;}
-    .controls{display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap;}
-    input[type="text"]{padding:8px; border-radius:8px; border:1px solid #d9e0ea; min-width:220px;}
-    input[type="range"]{width:120px;}
-    .page-wrapper{position:relative; margin-bottom:18px;}
-    .page-wrapper canvas{display:block; border-radius:6px; box-shadow:0 6px 14px rgba(10,20,30,0.06);}
-    .textLayer{position:absolute; left:0; top:0; right:0; bottom:0; z-index:2; color:transparent; user-select:text;}
-    .textLayer > span, .textLayer > div { color:transparent; position:absolute; transform-origin:0 0; white-space:pre; pointer-events:auto; cursor:text; }
-    .highlight{position:absolute; background:rgba(255,255,0,0.45); border-radius:2px; pointer-events:none; z-index:1;}
-    #results{max-height:70vh; overflow:auto;}
-    ul.matches{padding-left:16px; margin:8px 0;}
-    ul.matches li{margin-bottom:8px;}
-    .muted{color:var(--muted); font-size:0.9rem;}
-    footer{width:100%; max-width:1100px; padding:14px 20px; color:var(--muted); font-size:0.9rem;}
-    @media (max-width:940px){ .container{grid-template-columns:1fr;} header{flex-direction:column; align-items:flex-start;} .toolbar{margin-left:0;} }
-  </style>
+  <title>PDF Fuzzy Search</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header>
-    <h1>Fuzzy PDF Upload Search</h1>
+    <h1>PDF Fuzzy Search</h1>
     <div class="toolbar">
       <label class="btn secondary" title="Load local file">
         <input id="file-input" type="file" accept="application/pdf" style="display:none" />
@@ -48,35 +18,58 @@
     </div>
   </header>
 
-  <main class="container">
-    <section class="panel">
-      <div id="upload-area" class="dropzone">
-        Drag & drop a PDF here, or click <strong>Load PDF</strong>
+  <div class="container">
+    <div class="main-content">
+      <div class="upload-section">
+        <div id="upload-area" class="dropzone">
+          <div style="font-size: 1.2rem; margin-bottom: 8px;">📄</div>
+          Drag & drop a PDF here, or click <strong>Load PDF</strong>
+        </div>
+
+        <div class="search-controls">
+          <div class="search-input-wrapper">
+            <input id="search-box" type="text" placeholder="Type phrase to fuzzy-search (press Enter)" />
+          </div>
+          <button id="search-btn" class="btn">Search</button>
+          <div class="threshold-controls">
+            <label class="muted">Threshold</label>
+            <input id="threshold" type="range" min="0" max="1" step="0.05" value="0.4" />
+            <span id="threshold-val" class="muted">0.40</span>
+          </div>
+        </div>
+
+        <div id="status" class="status">No PDF loaded.</div>
       </div>
 
-      <div style="margin-top:12px;" class="controls">
-        <input id="search-box" type="text" placeholder="Type phrase to fuzzy-search (press Enter)" />
-        <button id="search-btn" class="btn">Search</button>
-        <label class="muted">Threshold</label>
-        <input id="threshold" type="range" min="0" max="1" step="0.05" value="0.4" />
-        <span id="threshold-val" class="muted">0.40</span>
+      <div class="pdf-viewer">
+        <div id="pdf-container">
+          <!-- PDF pages will be rendered here -->
+          <div style="text-align: center; padding: 40px; color: var(--muted);">
+            <div style="font-size: 3rem; margin-bottom: 16px;">📄</div>
+            <h3>No PDF Loaded</h3>
+            <p>Load a PDF file to start searching</p>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <div id="status" class="muted">No PDF loaded.</div>
-
-      <div id="pdf-container" class="panel" style="margin-top:12px;"></div>
-    </section>
-
-    <aside class="panel">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
+    <aside class="sidebar">
+      <div class="sidebar-header">
         <strong>Top matches</strong>
         <span id="page-count-display" class="muted">pages: ?</span>
       </div>
-      <div id="results"><div class="muted">No results yet.</div></div>
+      <div id="results">
+        <div class="muted" style="text-align: center; padding: 20px;">
+          No results yet.<br>
+          <small>Search results will appear here</small>
+        </div>
+      </div>
     </aside>
-  </main>
+  </div>
 
-  <footer class="muted">Everything runs locally in your browser. Share this HTML file; others can open it and search their PDFs without uploading them.</footer>
+  <footer class="muted">
+    Everything runs locally in your browser. Share this HTML file; others can open it and search their PDFs without uploading them.
+  </footer>
 
   <!-- libs (place in lib/ folder) -->
   <script src="lib/pdf.js"></script>
